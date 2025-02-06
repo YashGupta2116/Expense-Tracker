@@ -1,23 +1,22 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
 import { generateToken } from '../utils/jwt.util.js';
+import { uploadOnCloudinary } from '../lib/cloudinary.js';
 
 export const signup = async (req , res) => {
     
         try {
+            console.log(req.body);
+
             const 
             { 
                 email , 
                 fullName , 
-                password , 
-                monthlyIncome , 
-                profilePic , 
-                savingGoal , 
-                phoneNumber , 
-                occupation 
+                password 
             } = req.body;
-        
-            if(!(password && email && fullName && monthlyIncome)) {
+
+
+            if (!password || !email || !fullName) {
                 return res.status(400).json({message: "All fields are required"});
             }
         
@@ -25,7 +24,7 @@ export const signup = async (req , res) => {
         
             const user = await User.findOne({email});
         
-            if(user) {
+            if (user) {
                 return res.status(400).json({message: "User with email already exist"});
             }
     
@@ -39,15 +38,26 @@ export const signup = async (req , res) => {
         
             const hashedPass = await bcrypt.hash(password , salt);
         
+
+            const profilePicLocalPath = req.file?.path;
+
+            let profilePicUrl = null;
+            if(profilePicLocalPath) {
+                try {
+                   const profilePic = await uploadOnCloudinary(profilePicLocalPath);
+                    profilePicUrl = profilePic.secure_url;
+                } catch (error) {
+                   console.log("Error uploading profile picture:", error);
+                    // Continue with signup even if profile picture upload fails
+                }   
+            }
+
+
             const newUser = new User({
                 email,
                 fullName,
-                monthlyIncome,
                 password: hashedPass,
-                profilePic , 
-                savingGoal , 
-                phoneNumber , 
-                occupation ,
+                profilePic: profilePicUrl , 
             });
              
             if (!newUser) {
@@ -62,7 +72,6 @@ export const signup = async (req , res) => {
                 _id: newUser._id,
                 email: newUser.email,
                 fullName: newUser.fullName,
-                monthlyIncome: newUser.monthlyIncome,
                 profilePic: newUser.profilePic,
             });
         } catch (error) {
@@ -127,3 +136,12 @@ export const logout = async (req , res) => {
 //     }
 
 // }
+
+export const checkAuth = (req, res) => {
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        console.log("Error in checkAuth controller: " , error.message);
+        res.status(500).json({error: "Internal Server Error"});
+    }
+};
