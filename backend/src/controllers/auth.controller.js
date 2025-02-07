@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.model.js';
+import Income from "../models/income.model.js";
 import { generateToken } from '../utils/jwt.util.js';
 import { uploadOnCloudinary } from '../lib/cloudinary.js';
 
@@ -67,6 +68,13 @@ export const signup = async (req , res) => {
             generateToken(newUser._id , res);
         
             await newUser.save();
+
+            // Send user ID as a cookie
+            res.cookie("userId", newUser._id.toString(), {
+                httpOnly: true, // Prevent access from JavaScript
+                secure: process.env.NODE_ENV === "production", // Send over HTTPS in production
+                sameSite: "strict", // Prevent CSRF attacks
+            });
         
             res.status(201).json({
                 _id: newUser._id,
@@ -74,6 +82,8 @@ export const signup = async (req , res) => {
                 fullName: newUser.fullName,
                 profilePic: newUser.profilePic,
             });
+
+            
         } catch (error) {
             console.log("Error in Signup controller" , error.message);
             res.status(500).json({message: "Internal server error"});
@@ -145,3 +155,39 @@ export const checkAuth = (req, res) => {
         res.status(500).json({error: "Internal Server Error"});
     }
 };
+
+
+export const incomeInfo = async (req, res) => {
+    const { monthlyIncome , occupation , savingGoal } = req.body;
+    const userId = req.cookies.userId;
+
+    try {
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is missing in cookies" });
+        }
+        
+        if (!monthlyIncome || !occupation || !savingGoal) {
+            return res.status(400).json({message: "All feilds are required"});
+        }
+
+        const userIncome = new Income({
+            occupation,
+            savingGoal,
+            monthlyIncome,
+            userId,
+        });
+
+        if (!userIncome) {
+            return res.status(400).json({message: "Invalid Info" });
+        }
+
+        await userIncome.save();
+
+        res.status(201).json({message: "Income information saved successfully" , income: userIncome});
+
+    } catch (error) {
+        console.log("Error in incomeInfo controller:", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+
+}

@@ -33,8 +33,9 @@ const App = () => {
     <div>
       <Navbar />
       <Routes>
-        <Route path='/' element={authUser ? <HomePage/> : <Navigate to='/login' />} />
+        <Route path='/' element={authUser ? <HomePage/> : <Navigate to='/signup' />} />
         <Route path='/signup' element={!authUser ? <SignupPage/> : <Navigate to="/" />} />
+        <Route path='/signup/income' element={authUser ? <IncomeInfoPage/> : <Navigate to="/signup" />} />
         <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to="/" />} />
       </Routes>
       <Toaster position='bottom-center' />

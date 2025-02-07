@@ -1,8 +1,10 @@
 import React , {useState} from 'react'
 import { useAuthstore } from '../store/useAuthStore';
 import { Eye, EyeOff, Loader2, Lock, Mail, Wallet, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+
+const navigate = useNavigate();
 
 const SignupPage = () => {
 
@@ -18,31 +20,54 @@ const SignupPage = () => {
     const { signup , isSigningUp } = useAuthstore();
 
     const validateForm = () => {
-      if(!formData.fullName.trim()) return toast.error("Fullname is required" , {style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },});
-      if(!formData.email.trim()) return toast.error("email is required" , {style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },});
-      if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email" , {style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },});
-      if(!formData.password) return toast.error("password is required" , {style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },});
-      if(formData.password.length < 6) return toast.error("Password must at least 6 charachters" , {style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },});
+      if(!formData.fullName.trim()) return toast.error("Fullname is required" , 
+        {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+
+
+      if(!formData.email.trim()) return toast.error("email is required" , 
+        {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+
+
+      if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email" , 
+        {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+
+
+      if(!formData.password) return toast.error("password is required" , 
+        {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+
+
+      if(formData.password.length < 6) return toast.error("Password must at least 6 charachters" , 
+        {
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
 
       return true;
     } 
@@ -53,8 +78,14 @@ const SignupPage = () => {
       const success = validateForm();
 
       if(success === true) {
-        signup(formData);
+        signup(formData).then(() => {
+          navigate("/signup/income");
+        }).catch((err) => {
+          console.error("Signup error:", err);
+          toast.error("Signup failed. Please try again.");
+        });
       }
+
     }
 
 
