@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAuthstore } from '../store/useAuthStore'
 import {Link} from 'react-router-dom'
-import { LogOut, MessageSquare, Settings, User} from 'lucide-react'
+import { LogOut, Settings, User, Wallet} from 'lucide-react'
 
 const Navbar = () => {
   const {authUser , isCheckingAuth , logout} = useAuthstore();
@@ -9,7 +9,7 @@ const Navbar = () => {
 
   return (
     <header
-      className="bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 
+      className="border-b border-base-300 fixed w-full top-0 z-40 
     backdrop-blur-lg bg-base-100/80"
     >
       <div className="container mx-auto px-4 h-16">
@@ -17,9 +17,9 @@ const Navbar = () => {
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all">
               <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="w-5 h-5 text-primary" />
+                <Wallet className="w-5 h-5 text-primary" />
               </div>
-              <h1 className="text-lg font-bold">Chatty</h1>
+              <h1 className="text-lg font-bold text-slate-50">Wallet X</h1>
             </Link>
           </div>
 
