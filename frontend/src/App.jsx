@@ -7,7 +7,7 @@ import SignupPage from './pages/SignupPage'
 import LoginPage from './pages/LoginPage'
 import { useAuthstore } from './store/useAuthStore'
 import {Loader} from 'lucide-react';
-
+import {Toaster} from 'react-hot-toast';
 
 
 const App = () => {
@@ -37,7 +37,7 @@ const App = () => {
         <Route path='/signup' element={!authUser ? <SignupPage/> : <Navigate to="/" />} />
         <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to="/" />} />
       </Routes>
-
+      <Toaster position='bottom-center' />
     </div>
   )
 }
