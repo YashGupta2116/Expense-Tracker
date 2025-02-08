@@ -4,9 +4,11 @@ import { Eye, EyeOff, Loader2, Lock, Mail, Wallet, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const navigate = useNavigate();
+
 
 const SignupPage = () => {
+
+    const navigate = useNavigate();
 
     const [showPassword , setShowPassword] = useState(false);
 
