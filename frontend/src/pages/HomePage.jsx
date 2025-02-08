@@ -1,8 +1,10 @@
+//TODO: make the home page and dashboard 
+
 import React from 'react'
 
 const HomePage = () => {
   return (
-    <div>HomePage</div>
+    <div>Home Page</div>
   )
 }
 

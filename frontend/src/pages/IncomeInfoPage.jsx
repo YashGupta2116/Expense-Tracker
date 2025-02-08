@@ -1,5 +1,3 @@
-//TODO: Make this page backend is completed 
-
 import { Briefcase,  ChevronDown,  HandCoins, IndianRupee, Loader2, MoveRight } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -14,8 +12,8 @@ const IncomeInfoPage = () => {
     const { setIncomeInfo , isSettingIncomeInfo } = incomeStore();
 
     const [ formData , setFormData ] = useState({
-        monthlyIncome: 0 ,
-        savingGoal: 0 ,
+        monthlyIncome: '' ,
+        savingGoal: '' ,
         occupation: '' ,
     });
 
@@ -62,6 +60,14 @@ const IncomeInfoPage = () => {
               },
             });
 
+        if (formData.monthlyIncome <= formData.savingGoal) return toast.error("Saving Goal cannot be greater than income" , 
+            {
+              style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+              },
+            });
         return true;
     }
 
