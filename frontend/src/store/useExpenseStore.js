@@ -26,8 +26,8 @@ export const useExpenseStore = create((set) => ({
 
     },
 
-    recentExpense: null,
-    isGettingRecentExpense: false,
+    recentExpenses: null,
+    isGettingRecentExpenses: false,
 
     getRecentExpenses: async () => {
         set({ isGettingRecentExpense: true });
