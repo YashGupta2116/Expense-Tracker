@@ -16,7 +16,12 @@ const ExpensePage = () => {
         recentExpenses,
         getRecentExpenses,
         isGettingRecentExpenses
-    } = useExpenseStore();
+  } = useExpenseStore();
+  
+  useEffect(() => {
+    getRecentExpenses();
+    
+  } , [getRecentExpenses , recentExpenses])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -110,34 +115,31 @@ const ExpensePage = () => {
       </div>
 
       {/* Recent Expenses Section */}
-      {/* <div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
+      <div className="bg-gray-800 rounded-2xl p-6 shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Recent Expenses</h2>
         {isGettingRecentExpenses ? (
-          <p className="text-gray-400">Loading...</p>
-        ) : recentExpenses.length === 0 ? (
-          <p className="text-gray-400">No recent expenses</p>
-        ) : (
-          <div className="space-y-4">
-            {recentExpenses.map((expense, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center p-4 bg-gray-700 rounded-lg"
-              >
-                <div>
-                  <p className="text-lg font-medium">{expense.description}</p>
-                  <p className="text-sm text-gray-400">
-                    {expense.category} - ₹{expense.amount}
-                  </p>
-                </div>
-                <span className="text-sm text-gray-500">
-                  {new Date(expense.date).toLocaleDateString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div> */}
-    </div>
+  <p className="text-gray-400">Loading...</p>
+) : recentExpenses && recentExpenses.length > 0 ? (
+  <div className="space-y-4">
+    {recentExpenses.map((expense, index) => (
+      <div key={index} className="flex justify-between items-center p-4 bg-gray-700 rounded-lg">
+        <div>
+          <p className="text-lg font-medium">{expense.description}</p>
+          <p className="text-sm text-gray-400">
+            {expense.category} - ₹{expense.amount}
+          </p>
+        </div>
+        <span className="text-sm text-gray-500">
+          {new Date(expense.date).toLocaleDateString()}
+        </span>
+      </div>
+    ))}
+  </div>
+) : (
+  <p className="text-gray-400">No expenses in the last 30 days</p>
+)}
+      </div> 
+    </div> 
   </div>
   )
 }

@@ -33,14 +33,30 @@ export const useExpenseStore = create((set) => ({
         set({ isGettingRecentExpense: true });
         try {
             const response = await axiosInstance.post("/user/expenses");
-
-            if (!response) {
-                return toast.error("failed to get recent expenses");
+    
+            console.log("API Response:", response);
+    
+            const today = new Date();
+            const thirtyDays = new Date();
+            thirtyDays.setDate(today.getDate() - 30);
+    
+            const data = response.data.data.expenses.filter((expense) => {
+                const expenseDate = new Date(expense.date);
+                console.log("Expense Date Parsed:", expenseDate, "Thirty Days Ago:", thirtyDays);
+    
+                return expenseDate >= thirtyDays && expenseDate <= today;
+            });
+    
+            console.log("Filtered Recent Expenses:", data);
+    
+            if (!data || data.length === 0) {
+                return toast.error("No recent expenses found");
             }
-
-            set({ recentExpense: response.data });
+    
+            set({ recentExpenses: data });
         } catch (error) {
-            return toast.error(error);
+            console.error("Error fetching expenses:", error);
+            toast.error(error.message || "An error occurred");
         } finally {
             set({ isGettingRecentExpense: false });
         }
