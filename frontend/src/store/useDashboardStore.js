@@ -12,11 +12,7 @@ export const useDashboardStore = create((set) => ({
         try {
             const response = await axiosInstance.post("/user/dashboard");
     
-            if (!response) return toast.error("Couldn't load the dashboard" , {
-                style: {
-    
-                }
-            });
+            if (!response) return toast.error("Couldn't load the dashboard");
     
             // want to return it here    
             return response.data;     

@@ -21,7 +21,7 @@ const ExpensePage = () => {
   useEffect(() => {
     getRecentExpenses();
     
-  } , [getRecentExpenses , recentExpenses])
+  } , [])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,7 +29,8 @@ const ExpensePage = () => {
         const success = validateForm();
 
         if (success) {
-            newExpense(formData).catch((err) => toast.error("Something went wrong"));
+          newExpense(formData).catch((err) => toast.error("Something went wrong"));
+          setFormData({ amount: 0, description: '', category: '' });
         }
     }
 

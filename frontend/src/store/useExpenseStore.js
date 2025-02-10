@@ -10,13 +10,18 @@ export const useExpenseStore = create((set) => ({
         set({ isCreatingExpense: true });
         
         try {
-            const response = axiosInstance.post("/user/create-expense", data);
+            const response = await axiosInstance.post("/user/create-expense", data);
     
             if (!response) {
                 return toast.error("Error in creating new expense");
             }
     
-            return toast.success("New Expense added");
+            toast.success("New Expense added");
+
+            set((state) => ({
+                recentExpenses: state.recentExpenses ? [data, ...state.recentExpenses] : [data]
+            }));
+            
         } catch (error) {
             console.log("Error in creating expense: " , error.message);
             return toast.error("Error in creating new expense");
@@ -56,9 +61,46 @@ export const useExpenseStore = create((set) => ({
             set({ recentExpenses: data });
         } catch (error) {
             console.error("Error fetching expenses:", error);
-            toast.error(error.message || "An error occurred");
         } finally {
             set({ isGettingRecentExpense: false });
         }
+    },
+
+    isFetchingGroupedExpense: false,
+
+    fetchGroupedExpense: async () => {
+        set({ isFetchingGroupedExpense: true });
+        try {
+
+            const groupedResponse = await axiosInstance.post("/user/grouped-expenses");
+
+            if (!groupedResponse) console.log("Cant get groupedResponse from fetchGroupedExpense");
+
+            return groupedResponse.data;
+
+        } catch (error) {
+            console.log("error in fetchGroupedExpense : ", error);
+        } finally {
+            set({ isFetchingGroupedExpense: false });
+        }
+    },
+
+    isGettingTotalExpense: false,
+
+    getTotalExpense: async () => {
+        set({ isGettingTotalExpense: true });
+        try {
+            const totalExpense = await axiosInstance.post("/user/total-expense");
+
+            if (!totalExpense) return toast.error("No Expenses in last 30 days");
+
+            return totalExpense.data;
+        } catch (error) {
+            console.log("There is an error in getting total expense");
+        } finally {
+            set({ isGettingTotalExpense: false });
+        }
+        
     }
+
 }))

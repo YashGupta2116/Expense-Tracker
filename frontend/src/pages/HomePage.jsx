@@ -1,41 +1,62 @@
-//TODO: add the agregation pipelines when expense page is made 
-
 import React, { useEffect, useState } from "react";
 import { useDashboardStore } from "../store/useDashboardStore";
+import { useExpenseStore } from "../store/useExpenseStore";
+import toast from "react-hot-toast";
+import {IndianRupee, Percent} from "lucide-react"
 
 const HomePage = () => {
   const [dashboardInfo, setDashboardInfo] = useState({
     totalBalance: "0",
-    motnhlyExpense: "0",
+    monthlyExpense: "0",
     savings: "0",
   });
 
+  const [expenseBreakdown, setExpenseBreakdown] = useState([]);
+
   const { getDashboard } = useDashboardStore();
+  const { isFetchingGroupedExpense, fetchGroupedExpense , getTotalExpense , isGettingTotalExpense} = useExpenseStore();
 
-  try {
-    useEffect(() => {
-      const fetchDashboard = async () => {
-        const data = await getDashboard();
+  
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      const data = await getDashboard();
+      const totalExpense = await getTotalExpense();
+      if (!data) {
+        return toast.error("Cannot fetch data");
+      }
+      if (!totalExpense) {
+        return toast.error("Cannot fetch totalExpense");
+      }
 
-        if (!data) {
-          return toast.error("Cannot fetch data");
-        }
+      console.log("Dashboard data :", data);
+      console.log("totalExpene : ", totalExpense.totalAmount)
+      
+      const balance = data.monthlyIncome - totalExpense.totalAmount;
 
-        console.log("Dashboard data :", data);
+      const saved = balance * 20 / 100; 
+      
+      console.log(balance , saved , totalExpense)
+      setDashboardInfo({ ...dashboardInfo , savings: saved , totalBalance: balance , monthlyExpense: totalExpense.totalAmount})
 
-        const newSavings = totalExpenses;
+    };
 
-        setDashboardInfo({ ...dashboardInfo, savings: newSavings });
-      };
+    fetchDashboard();
 
-      fetchDashboard();
-    }, []);
-  } catch (error) {
-    console.log(error);
-  }
+    const fetchExpenseBreakdown = async () => {
+      const data = await fetchGroupedExpense();
+
+      if (!data) {
+        toast.error("cannot fetch expense breakdown ")
+      }
+      setExpenseBreakdown(data);
+    }
+
+    fetchExpenseBreakdown();
+  }, []);
+  
 
   return (
-    <div className="min-h-screen bg-indigo-900 pt-20 p-6">
+    <div className="min-h-screen bg-gray-800 pt-20 p-6">
       <section className="max-w-7xl mx-auto">
         {/* Financial Dashboard Header */}
         <div className="text-center mb-8 text-white">
@@ -49,8 +70,8 @@ const HomePage = () => {
             <h2 className="text-lg font-semibold text-gray-800">
               Total Balance
             </h2>
-            <p className="text-2xl font-bold text-blue-600">$4,280.00</p>
-            <p className="text-sm text-green-500">+12% from last month</p>
+            <p className="text-2xl font-bold text-blue-600">{ dashboardInfo.totalBalance }</p>
+            <p className="text-sm text-green-500"></p>
           </div>
 
           {/* Monthly Expenses Card */}
@@ -58,40 +79,37 @@ const HomePage = () => {
             <h2 className="text-lg font-semibold text-gray-800">
               Monthly Expenses
             </h2>
-            <p className="text-2xl font-bold text-red-600">$2,150.00</p>
+            <p className="text-2xl font-bold text-red-600">{ dashboardInfo.monthlyExpense }</p>
             <p className="text-sm text-gray-500">Last 30 days</p>
           </div>
 
           {/* Savings Card */}
           <div className="card bg-white shadow-lg p-4 rounded-lg">
-            <h2 className="text-lg font-semibold text-gray-800">Savings</h2>
-            <p className="text-2xl font-bold text-green-600">$2,130.00</p>
+            <h2 className="text-lg font-semibold text-gray-800">Available To Invest</h2>
+            <p className="text-2xl font-bold text-green-600">{ dashboardInfo.savings }</p>
             <p className="text-sm text-gray-500">Available to invest</p>
           </div>
         </div>
 
         {/* Expense Breakdown Section */}
-        {/* <div className="mt-10 bg-white shadow-lg p-6 rounded-lg">
+        <div className="mt-10 bg-white shadow-lg p-6 rounded-lg">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Expense Breakdown</h2>
-          <ul>
-            <li className="flex justify-between text-gray-700">
-              <span>Housing</span>
-              <span>$850.00 (40%)</span>
+          {isFetchingGroupedExpense ? (<span>loading....</span>) : (<ul>
+            {expenseBreakdown.map((expense, index) =>
+            (<li key={index} className="flex justify-between text-gray-700 font-bold text-xl">
+              
+              <span>{expense.category}</span>
+              <div className="flex items-center">
+                <IndianRupee size={14} className="mr-1" />
+                <span>{expense.totalAmount}</span>
+              </div>
+              
             </li>
-            <li className="flex justify-between text-gray-700">
-              <span>Food & Groceries</span>
-              <span>$450.00 (21%)</span>
-            </li>
-            <li className="flex justify-between text-gray-700">
-              <span>Transportation</span>
-              <span>$300.00 (14%)</span>
-            </li>
-            <li className="flex justify-between text-gray-700">
-              <span>Entertainment</span>
-              <span>$200.00 (9%)</span>
-            </li>
-          </ul>
-        </div> */}
+              
+              ))}
+          </ul>) }
+          
+        </div>
 
         {/* Investment Recommendations Section */}
         {/* <div className="mt-10 bg-white shadow-lg p-6 rounded-lg">
