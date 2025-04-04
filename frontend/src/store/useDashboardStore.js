@@ -1,28 +1,25 @@
 import {create} from 'zustand';
-import { axiosInstance } from '../lib/axios';
-import {toast} from 'react-hot-toast'
+import {axiosInstance} from '../lib/axios';
+import {toast} from 'react-hot-toast';
 
 export const useDashboardStore = create((set) => ({
-    isGettingDashboard: false,
+  isGettingDashboard: false,
 
-    getDashboard: async () => {
+  getDashboard: async () => {
+    set({isGettingDashboard: true});
 
-        set({ isGettingDashboard: true });
+    try {
+      const response = await axiosInstance.post('/user/dashboard');
 
-        try {
-            const response = await axiosInstance.post("/user/dashboard");
-    
-            if (!response) return toast.error("Couldn't load the dashboard");
-    
-            // want to return it here    
-            return response.data;     
+      if (!response) return toast.error("Couldn't load the dashboard");
 
-        } catch (error) {
-            console.log("Error in getDashboard" , error.message);
-            return toast.error("Internal Server error: Couldnt load the dashboard");
-        } finally {
-            set({ isGettingDashboard: false })
-        }
+      // want to return it here
+      return response.data;
+    } catch (error) {
+      console.log('Error in getDashboard', error.message);
+      return toast.error('Internal Server error: Couldnt load the dashboard');
+    } finally {
+      set({isGettingDashboard: false});
     }
-    
-})) 
+  },
+}));
